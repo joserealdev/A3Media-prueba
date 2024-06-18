@@ -1,33 +1,41 @@
-import { useAppDispatch, useAppSelector } from "@core/store/hooks";
-import "./App.css";
-import reactLogo from "./assets/react.svg";
-import { addToCount } from "./core/store/globalSlice";
-import viteLogo from "/vite.svg";
+import CenterWrapper from "@components/CenterWrapper";
+import ImageGallery from "@components/Gallery";
+import Header from "@components/Header";
+import Loading from "@components/Loading";
+import { fetchAllDogs, fetchImagesByBreed } from "@core/store/globalSlice";
+import {
+  breedImagesSelector,
+  isLoadingSelector,
+  useAppDispatch,
+  useAppSelector,
+} from "@core/store/hooks";
+import { useEffect } from "react";
 
 function App() {
-  const count = useAppSelector((state) => state.global.counter);
   const dispatch = useAppDispatch();
+  const isLoading = useAppSelector(isLoadingSelector());
+  const selectedBreed = useAppSelector((state) => state.global.selectedBreed);
+  const images = useAppSelector(breedImagesSelector(selectedBreed));
+
+  useEffect(() => {
+    dispatch(fetchAllDogs());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (selectedBreed.length > 0) {
+      dispatch(fetchImagesByBreed(selectedBreed));
+    }
+  }, [dispatch, selectedBreed]);
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => dispatch(addToCount())}>count is {count}</button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Header />
+      {isLoading ? <Loading /> : <ImageGallery images={images} />}
+      {!isLoading && !selectedBreed && (
+        <CenterWrapper data-cy="select-breed-msg">
+          Please select one breed to see images
+        </CenterWrapper>
+      )}
     </>
   );
 }

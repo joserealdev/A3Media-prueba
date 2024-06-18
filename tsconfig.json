@@ -22,6 +22,7 @@
     "baseUrl": ".",
     "paths": {
       "@common/*": ["src/common/*"],
+      "@components/*": ["src/components/*"],
       "@core/*": ["src/core/*"],
       "@contexts/*": ["src/contexts/*"],
       "@svg/*": ["src/svg/*"],
